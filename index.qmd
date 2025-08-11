@@ -6,28 +6,62 @@ execute:
   echo: false
 ---
 
-
 ```{r}
 # load required packages
-if (!requireNamespace("DT", quietly = TRUE)) {
-  install.packages("DT")
+if (!requireNamespace("reactable", quietly = TRUE)) {
+  install.packages("reactable")
 }
-library(DT)
+if (!requireNamespace("reactablefmtr", quietly = TRUE)) {
+  install.packages("reactablefmtr")
+}
 
-# read CSV (put your CSV in data/data.csv)
-df <- read.csv("data/journals.csv")
+library(reactable)
+library(reactablefmtr)  # for color scales & tooltips
 
-# render DT datatable with search box, column filters
-datatable(
+# read CSV
+df <- read.csv("data/journals.csv", stringsAsFactors = FALSE)
+
+# render enhanced reactable
+reactable(
   df,
-  filter = 'top',       # per-column filters
-  options = list(
-    pageLength = 25,
-    lengthMenu = c(10,25,50,100),
-    search = list(regex = TRUE, caseInsensitive = TRUE)
+  searchable = TRUE,             # global search bar
+  pagination = TRUE,
+  defaultPageSize = 25,
+  highlight = TRUE,
+  striped = TRUE,
+  compact = TRUE,
+  resizable = TRUE,               # allow resizing columns
+  filterable = TRUE,              # per-column filter box
+  sortable = TRUE,                # sortable columns
+  defaultSortOrder = "asc",
+  defaultColDef = colDef(
+    minWidth = 120,
+    headerStyle = list(background = "#f5f5f5"),  # light header background
+    align = "left"
   ),
-  rownames = FALSE,
-  class = 'stripe hover compact'
+  columns = list(
+    # Example: color-scale an "Impact" column if present
+    Impact = colDef(
+      style = color_scales(df, colors = c("#ffcccc", "#ccffcc")),
+      format = colFormat(digits = 2),
+      na = "—"
+    ),
+    # Example: tooltip for "Journal" column
+    Journal = colDef(
+      html = TRUE,
+      cell = function(value) {
+        reactablefmtr::tooltip(value, paste("Full name:", value))
+      }
+    )
+  ),
+  showPageSizeOptions = TRUE,     # user can change rows per page
+  pageSizeOptions = c(10, 25, 50, 100),
+  bordered = TRUE,
+  wrap = FALSE,
+  theme = reactableTheme(
+    borderColor = "#ddd",
+    highlightColor = "#f0f8ff",
+    stripedColor = "#f9f9f9"
+  )
 )
-
 ```
