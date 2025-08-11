@@ -1,0 +1,33 @@
+---
+title: "ABDC Ranking List"
+author: "K. Harishankar"
+format: html
+execute: 
+  echo: false
+---
+
+
+```{r}
+# load required packages
+if (!requireNamespace("DT", quietly = TRUE)) {
+  install.packages("DT")
+}
+library(DT)
+
+# read CSV (put your CSV in data/data.csv)
+df <- read.csv("data/journals.csv")
+
+# render DT datatable with search box, column filters
+datatable(
+  df,
+  filter = 'top',       # per-column filters
+  options = list(
+    pageLength = 25,
+    lengthMenu = c(10,25,50,100),
+    search = list(regex = TRUE, caseInsensitive = TRUE)
+  ),
+  rownames = FALSE,
+  class = 'stripe hover compact'
+)
+
+```
