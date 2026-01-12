@@ -21,9 +21,22 @@ library(reactablefmtr)  # for color scales & tooltips
 # read CSV
 df <- read.csv("data/journals.csv", stringsAsFactors = FALSE)
 
+# clean / reformat column names
+names(df) <- c(
+  "Title",
+  "Publisher",
+  "Field",
+  "Rating",
+  "ISSN",
+  "ISSN Online",
+  "Website"
+)
+
+df_display <-  df[, !names(df) %in% c("ISSN", "ISSN Online", "Website")]
+
 # render enhanced reactable
 reactable(
-  df,
+  df_display,
   searchable = TRUE,             # global search bar
   pagination = TRUE,
   defaultPageSize = 25,
@@ -34,34 +47,26 @@ reactable(
   filterable = TRUE,              # per-column filter box
   sortable = TRUE,                # sortable columns
   defaultSortOrder = "asc",
-  defaultColDef = colDef(
-    minWidth = 120,
-    headerStyle = list(background = "#f5f5f5"),  # light header background
-    align = "left"
-  ),
-  columns = list(
-    # Example: color-scale an "Impact" column if present
-    Impact = colDef(
-      style = color_scales(df, colors = c("#ffcccc", "#ccffcc")),
-      format = colFormat(digits = 2),
-      na = "—"
-    ),
-    # Example: tooltip for "Journal" column
-    Journal = colDef(
-      html = TRUE,
-      cell = function(value) {
-        reactablefmtr::tooltip(value, paste("Full name:", value))
-      }
-    )
-  ),
   showPageSizeOptions = TRUE,     # user can change rows per page
   pageSizeOptions = c(10, 25, 50, 100),
   bordered = TRUE,
   wrap = FALSE,
+ columns = list(
+    Title = colDef(minWidth = 200, width = 350),
+    Publisher = colDef(minWidth = 150, width = 260),
+    `Rating` = colDef(filterInput = "select", width = 50),
+    `Field` = colDef(width = 70)
+  ), 
   theme = reactableTheme(
+     headerStyle = list(
+      whiteSpace = "normal",
+      height = "3.5em",
+      lineHeight = "1.2"
+    ),
     borderColor = "#ddd",
     highlightColor = "#f0f8ff",
     stripedColor = "#f9f9f9"
   )
+  
 )
 ```
