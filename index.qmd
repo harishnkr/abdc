@@ -8,15 +8,9 @@ execute:
 
 ```{r}
 # load required packages
-if (!requireNamespace("reactable", quietly = TRUE)) {
-  install.packages("reactable")
-}
-if (!requireNamespace("reactablefmtr", quietly = TRUE)) {
-  install.packages("reactablefmtr")
-}
-
 library(reactable)
 library(reactablefmtr)  # for color scales & tooltips
+library(htmltools)
 
 # read CSV
 df <- read.csv("data/journals.csv", stringsAsFactors = FALSE)
@@ -39,8 +33,8 @@ reactable(
   df_display,
   searchable = TRUE,             # global search bar
   pagination = TRUE,
-  defaultPageSize = 25,
   highlight = TRUE,
+   elementId = "journals-select",
   striped = TRUE,
   compact = TRUE,
   resizable = TRUE,               # allow resizing columns
@@ -48,14 +42,28 @@ reactable(
   sortable = TRUE,                # sortable columns
   defaultSortOrder = "asc",
   showPageSizeOptions = TRUE,     # user can change rows per page
+  defaultPageSize = 25,
   pageSizeOptions = c(10, 25, 50, 100),
   bordered = TRUE,
-  wrap = FALSE,
+  wrap = TRUE,
  columns = list(
-    Title = colDef(minWidth = 200, width = 350),
-    Publisher = colDef(minWidth = 150, width = 260),
-    `Rating` = colDef(filterInput = "select", width = 50),
-    `Field` = colDef(width = 70)
+  Rating = colDef(
+    filterInput = function(values, name) {
+      tags$select(
+        onchange = sprintf(
+          "Reactable.setFilter('journals-select', '%s', event.target.value || undefined)",
+          name
+        ),
+        tags$option(value = "", "All"),
+        lapply(unique(values), tags$option),
+        "aria-label" = sprintf("Filter %s", name),
+      )
+    }
+  ) ,
+    Title = colDef(minWidth = 200),
+    Publisher = colDef(minWidth = 150),
+    Field = colDef(minWidth = 70),
+    Rating = colDef(minWidth = 50)
   ), 
   theme = reactableTheme(
      headerStyle = list(
