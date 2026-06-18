@@ -45,25 +45,36 @@ reactable(
   pageSizeOptions = c(10, 25, 50, 100),
   bordered = TRUE,
   wrap = TRUE,
- columns = list(
+columns = list(
+
+  Title = colDef(minWidth = 200),
+
+  Publisher = colDef(minWidth = 150),
+
+  Field = colDef(minWidth = 70),
+
   Rating = colDef(
+    minWidth = 50,
     filterInput = function(values, name) {
+
+      vals <- sort(unique(trimws(as.character(values))))
+      vals <- vals[!is.na(vals) & vals != ""]
+
       tags$select(
         onchange = sprintf(
           "Reactable.setFilter('journals-select', '%s', event.target.value || undefined)",
           name
         ),
         tags$option(value = "", "All"),
-        lapply(unique(values), tags$option),
-        "aria-label" = sprintf("Filter %s", name),
+        lapply(vals, function(x) {
+          tags$option(value = x, x)
+        }),
+        `aria-label` = sprintf("Filter %s", name)
       )
     }
-  ) ,
-    Title = colDef(minWidth = 200),
-    Publisher = colDef(minWidth = 150),
-    Field = colDef(minWidth = 70),
-    Rating = colDef(minWidth = 50)
-  ), 
+  )
+
+),
   theme = reactableTheme(
      headerStyle = list(
       whiteSpace = "normal",
