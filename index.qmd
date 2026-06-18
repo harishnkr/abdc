@@ -9,7 +9,6 @@ execute:
 ```{r}
 # load required packages
 library(reactable)
-library(reactablefmtr)  # for color scales & tooltips
 library(htmltools)
 
 # read CSV
@@ -19,14 +18,14 @@ df <- read.csv("data/journals.csv", stringsAsFactors = FALSE)
 names(df) <- c(
   "Title",
   "Publisher",
-  "Field",
-  "Rating",
   "ISSN",
   "ISSN Online",
-  "Website"
+  "Inception Year",
+  "Field",
+  "Rating"
 )
 
-df_display <-  df[, !names(df) %in% c("ISSN", "ISSN Online", "Website")]
+df_display <-  df[, !names(df) %in% c("ISSN", "ISSN Online")]
 
 # render enhanced reactable
 reactable(
