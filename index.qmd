@@ -1,6 +1,8 @@
 ---
 title: "ABDC Ranking List"
-author: "K. Harishankar"
+author:
+  - name: "K. Harishankar"
+    url: "https://www.harishnkr.in"
 format: html
 execute: 
   echo: false
